@@ -1,0 +1,38 @@
+{
+  "name": "vaccine-slot-pinger",
+  "version": "1.0.0",
+  "description": "Vaccine slot checker",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prashant Tiwari",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "date-fns": "^2.21.1",
+    "minimist": "^1.2.5",
+    "prompt-sync": "^4.2.0",
+    "sound-play": "^1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abhinavdc/cowin-pinger.git"
+  },
+  "bin": {
+    "vaccine-slot-pinger": "app.js"
+  },
+  "keywords": [
+    "cowin",
+    "covid",
+    "vaccine",
+    "notification",
+    "notifier",
+    "automation",
+  ],
+  "bugs": {
+    "url": "https://github.com/abhinavdc/cowin-pinger/issues"
+  },
+  "homepage": "https://github.com/abhinavdc/cowin-pinger#readme",
+  "devDependencies": {}
+}
