@@ -28,7 +28,7 @@
     "vaccine",
     "notification",
     "notifier",
-    "automation",
+    "automation"
   ],
   "bugs": {
     "url": "https://github.com/abhinavdc/cowin-pinger/issues"
