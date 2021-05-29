@@ -35,12 +35,9 @@ function initiateScript() {
 }
 
 function scheduleCowinPinger(params) {
-    let pingCount = 0;
+    pingCowin(params);
     timer = setInterval(() => {
-        console.clear();
-        pingCount += 1;
         pingCowin(params);
-        console.log("Ping Count - ", pingCount);
     }, params.interval * 60000);
 }
 
@@ -50,34 +47,43 @@ function pingCowin({ age, districtId, appointmentsListLimit, date, pin }) {
         url = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=${pin}&date=${date}`
     }
     axios.get(url, { headers: { 'User-Agent': sampleUserAgent } }).then((result) => {
-        const { centers } = result.data;
-        let isSlotAvailable = false;
-        let dataOfSlot = "";
-        let appointmentsAvailableCount = 0;
-        if (centers.length) {
-            centers.forEach(center => {
-                center.sessions.forEach((session => {
-                    if (session.min_age_limit < +age && session.available_capacity > 0) {
-                        isSlotAvailable = true
-                        appointmentsAvailableCount++;
-                        if (appointmentsAvailableCount <= appointmentsListLimit) {
-                            dataOfSlot = `${dataOfSlot}\nSlot for ${session.available_capacity} is available: ${center.name} on ${session.date}`;
-                        }
-                    }
-                }))
-            });
-
-            if (appointmentsAvailableCount - appointmentsListLimit) {
-                dataOfSlot = `${dataOfSlot}\n${appointmentsAvailableCount - appointmentsListLimit} more slots available...`
-            }
-        }
-        if (isSlotAvailable) {
-            console.log(dataOfSlot);
+        const parsed = parseData(result.data, age);
+        if (parsed.length) {
+            console.log(`Name   Address     Date    Vaccine     Avialable Dose`)
+            console.log(`-----------------------------------------------------`)
+            parsed.forEach(item => {
+                console.log(`${item.vaccine} -  ${item.name} - ${item.address} - ${item.date} - ${item.avialable_dose}`)
+            })
             console.log('Slots found\nStopping Pinger...')
             sound.play(notificationSound, 1);
             clearInterval(timer);
+        } else {
+            console.log(`Pinged at ${new Date()} No Slots Found.`)
         }
     }).catch((err) => {
         console.log("Error: " + err.message);
     });
+}
+
+function parseData({ centers }, age) {
+    if (!centers.length) { return; }
+    let appointmentsAvailableCount = 0;
+    let results = []
+    centers.forEach(center => {
+        let item = {
+            name: center.name,
+            address: center.address,
+        }
+        center.sessions.forEach(session => {
+            if (session.min_age_limit <= age && session.available_capacity > 0) {
+                appointmentsAvailableCount++
+                item.date = session.date
+                item.vaccine = session.vaccine
+                item.avialable_dose = session.available_capacity_dose1
+                results.push(item)
+            }
+        })
+    })
+
+    return results
 }
